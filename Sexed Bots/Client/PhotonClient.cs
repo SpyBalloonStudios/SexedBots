@@ -40,7 +40,7 @@ namespace Sexed_Bots.Client
             AuthValues.AddAuthParameter("user", userid);
             AuthValues.AddAuthParameter("hwid", FakeMacId);
             AuthValues.AddAuthParameter("platform", "android");
-            AuthValues.AddAuthParameter("unityVersion", "2019.4.40f1");
+            AuthValues.AddAuthParameter("unityVersion", AppVersion.Split('-')[0]);
 
             AddCallbackTarget(this);
 
