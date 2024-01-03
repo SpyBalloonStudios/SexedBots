@@ -1,0 +1,58 @@
+﻿using Photon.Realtime;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Sexed_Bots.Client
+{
+    public static class Extensions
+    {
+        public static string GetUsername(this Player player)
+        {
+            if (player.CustomProperties.ContainsKey("user"))
+                if (player.CustomProperties["user"] is Dictionary<string, object> dict)
+                    return (string)dict["username"];
+            return "No Username";
+        }
+
+        public static string GetDisplayName(this Player player)
+        {
+            if (player.CustomProperties.ContainsKey("user"))
+                if (player.CustomProperties["user"] is Dictionary<string, object> dict)
+                    return (string)dict["displayName"];
+            return "No DisplayName";
+        }
+
+        public static string GetAvatarStatus(this Player player)
+        {
+            if (player.CustomProperties["avatarDict"] is Dictionary<string, object> dict)
+                return (string)dict["releaseStatus"];
+            return "No Status";
+        }
+
+        public static string GetAvatarID(this Player player)
+        {
+            if (player.CustomProperties["avatarDict"] is Dictionary<string, object> dict)
+                return (string)dict["id"];
+            return "No ID";
+        }
+
+        public static string GetAPIUserID(this Player player)
+        {
+            if (player.CustomProperties.ContainsKey("user"))
+                if (player.CustomProperties["user"] is Dictionary<string, object> dict)
+                    return (string)dict["id"];
+            return "";
+        }
+        public static object GetInstanceField(Type type, object instance, string fieldName)
+        {
+            BindingFlags bindFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
+                | BindingFlags.Static;
+            FieldInfo field = type.GetField(fieldName, bindFlags);
+            return field.GetValue(instance);
+        }
+    }
+}
