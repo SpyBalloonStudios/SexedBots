@@ -26,8 +26,11 @@ namespace Sexed_Bots
             BClient_ = BClient;
 
             // check if the return value of travel request is true
-            if (!TravelRequest().Result) return;
-
+            if (!TravelRequest().Result)
+            {
+                Console.WriteLine("Failed to send travel request. Exiting");
+                return;
+            }
 
             VisitPayload();
 
@@ -77,21 +80,6 @@ namespace Sexed_Bots
 
             return Convert.ToInt32((Task.Run(async () => await VRCWrapper.Get($"worlds/{WorldID_.Split(':')[0]}", BClient_)).Result["capacity"].ToString()));
         }
-        public void VisitRequest()
-        {
-            Console.WriteLine("public void VisitRequest()");
-
-            Task.Run(async () =>
-            {
-                HttpRequestMessage joinWorldPayload = new HttpRequestMessage(HttpMethod.Put, "https://api.vrchat.cloud/api/1/joins?apiKey=JlE5Jldo5Jibnk5O5hTx6XVqsJu4WJ26&organization=vrchat");
-                string joinWorldBody = JsonConvert.SerializeObject(new { userId = BClient_.UserID_, worldId = WorldID_ });
-                joinWorldPayload.Content = new StringContent(joinWorldBody, Encoding.UTF8, "application/json");
-                HttpResponseMessage joinWorldResp = await BClient_.HttpClient.SendAsync(joinWorldPayload);
-                string joinWorldRespBody = await joinWorldResp.Content.ReadAsStringAsync();
-                // Print the responso the console
-                Console.WriteLine(joinWorldRespBody);
-            }).Wait();
-        }
         public async Task<bool> TravelRequest()
         {
             Console.WriteLine("public async Task<bool> TravelRequest()");
@@ -100,8 +88,12 @@ namespace Sexed_Bots
 
             HttpResponseMessage TravelResponseMessage = await BClient_.HttpClient.PostAsync(url, null);
 
-            if (!TravelResponseMessage.IsSuccessStatusCode)
+            if (TravelResponseMessage.IsSuccessStatusCode)
             {
+                // Write the response to the console
+                string TravelBody = await TravelResponseMessage.Content.ReadAsStringAsync();
+                Console.WriteLine(TravelBody);
+            } else {
                 Console.WriteLine($"Response status code: {(int)TravelResponseMessage.StatusCode} ({TravelResponseMessage.StatusCode})");
                 string errorContent = await TravelResponseMessage.Content.ReadAsStringAsync();
                 Console.WriteLine($"Error content: {errorContent}");
@@ -111,16 +103,19 @@ namespace Sexed_Bots
         }
         public async Task<JObject> TravelToken()
         {
-            Console.WriteLine("public async Task<JObject> GetPhotonWorld()");
 
-            VisitRequest();
+            Console.WriteLine("public async Task<JObject> TravelToken()");
 
             string url = $"https://api.vrchat.cloud/api/1/travel/{WorldID_}/token?apiKey=JlE5Jldo5Jibnk5O5hTx6XVqsJu4WJ26&organization=vrchat";
             HttpResponseMessage WorldResponse = await BClient_.HttpClient.GetAsync(url);
             string WorldBody;
 
-            if (!WorldResponse.IsSuccessStatusCode)
-            {
+            if (WorldResponse.IsSuccessStatusCode)
+            { 
+                // Write the response to the console
+                WorldBody = await WorldResponse.Content.ReadAsStringAsync();
+                Console.WriteLine(WorldBody);
+            } else {
                 Console.WriteLine($"Response status code: {(int)WorldResponse.StatusCode} ({WorldResponse.StatusCode})");
                 string errorContent = await WorldResponse.Content.ReadAsStringAsync();
                 Console.WriteLine($"Error content: {errorContent}");

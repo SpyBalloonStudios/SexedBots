@@ -101,6 +101,11 @@ namespace Sexed_Bots.Client
 
             WorldVisitPayload visitPayload = new WorldVisitPayload(this, RoomID);
 
+            if (visitPayload == null)
+            {
+                Console.WriteLine($"Failed to get VisitPayload. Exiting\n");
+                return;
+            }
             Console.WriteLine($"\n| VisitPayload for [{DisplayName_}]\n| Capacity {visitPayload.Capacity_}\n| PhotonVersion {visitPayload.RoomVersion_}\n");
 
             EnterRoomParams enterRoomParams = new EnterRoomParams
